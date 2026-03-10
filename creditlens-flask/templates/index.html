@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CreditLens Pro — AI Credit Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #03050A;
+  --surface:  #090D18;
+  --card:     #0D1525;
+  --border:   #1A2640;
+  --accent:   #00E5FF;
+  --accent2:  #7B61FF;
+  --green:    #00C853;
+  --amber:    #FFB300;
+  --red:      #FF3D57;
+  --text:     #E8EDF5;
+  --muted:    #5A6B8A;
+  --font-head:'Syne', sans-serif;
+  --font-mono:'DM Mono', monospace;
+  --font-body:'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Grid Background ── */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(0,229,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events:none; z-index:0;
+}
+
+/* ── Nav ── */
+nav {
+  position: sticky; top:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 40px; height:64px;
+  background: rgba(3,5,10,.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+  display:flex; align-items:center; gap:10px;
+  font-family: var(--font-head); font-weight:800; font-size:1.2rem;
+  color: var(--accent); letter-spacing:-0.5px;
+}
+.nav-brand .dot { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
+.nav-tag {
+  font-family:var(--font-mono); font-size:.65rem; color:var(--muted);
+  border:1px solid var(--border); padding:3px 10px; border-radius:20px;
+}
+
+/* ── Hero ── */
+.hero {
+  position:relative; z-index:1;
+  padding: 80px 40px 60px;
+  max-width: 1200px; margin:0 auto;
+  text-align:center;
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:.72rem;
+  color:var(--accent); border:1px solid rgba(0,229,255,.25);
+  background:rgba(0,229,255,.05); padding:6px 16px; border-radius:20px;
+  margin-bottom:28px;
+}
+.hero-badge .pulse { width:6px; height:6px; border-radius:50%; background:var(--accent); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+.hero h1 {
+  font-family:var(--font-head); font-size:clamp(2.5rem, 6vw, 4.5rem);
+  font-weight:800; line-height:1.05; letter-spacing:-2px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:20px;
+}
+.hero p {
+  font-size:1.1rem; color:var(--muted); max-width:600px; margin:0 auto 40px;
+  line-height:1.7;
+}
+.hero-stats {
+  display:flex; justify-content:center; gap:48px; margin-top:40px;
+}
+.stat { text-align:center; }
+.stat-num { font-family:var(--font-head); font-size:2rem; font-weight:800; color:var(--accent); }
+.stat-lbl { font-size:.75rem; color:var(--muted); font-family:var(--font-mono); margin-top:4px; }
+
+/* ── Main Layout ── */
+.main { max-width:1200px; margin:0 auto; padding:0 40px 80px; position:relative; z-index:1; }
+
+/* ── Section Labels ── */
+.step-label {
+  display:flex; align-items:center; gap:12px; margin-bottom:24px;
+}
+.step-num {
+  width:28px; height:28px; border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:.75rem; font-weight:500; color:#000;
+  flex-shrink:0;
+}
+.step-title { font-family:var(--font-head); font-size:.85rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
+
+/* ── Cards ── */
+.card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px;
+  margin-bottom:20px;
+  transition:border-color .3s;
+}
+.card:hover { border-color: rgba(0,229,255,.2); }
+
+/* ── Form Elements ── */
+.form-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.form-grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+.form-grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+
+.field { display:flex; flex-direction:column; gap:7px; }
+.field label {
+  font-family:var(--font-mono); font-size:.7rem; font-weight:500;
+  color:var(--muted); text-transform:uppercase; letter-spacing:.08em;
+}
+.field input, .field select, .field textarea {
+  background:var(--surface); border:1px solid var(--border);
+  color:var(--text); font-family:var(--font-body); font-size:.9rem;
+  padding:11px 14px; border-radius:10px; outline:none;
+  transition:border-color .25s, box-shadow .25s;
+  width:100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,229,255,.1);
+}
+.field select option { background:var(--surface); }
+.field textarea { resize:vertical; min-height:90px; line-height:1.6; }
+.field .hint { font-size:.72rem; color:var(--muted); }
+
+/* ── Upload Zones ── */
+.upload-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.upload-zone {
+  border:2px dashed var(--border); border-radius:12px;
+  padding:24px 16px; text-align:center; cursor:pointer;
+  transition:all .25s; position:relative;
+}
+.upload-zone:hover { border-color:var(--accent); background:rgba(0,229,255,.03); }
+.upload-zone.has-files { border-color:var(--green); background:rgba(0,200,83,.05); }
+.upload-zone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.upload-icon { font-size:2rem; margin-bottom:8px; }
+.upload-label { font-family:var(--font-head); font-size:.85rem; font-weight:600; margin-bottom:4px; }
+.upload-sub { font-size:.72rem; color:var(--muted); font-family:var(--font-mono); }
+.upload-count { font-size:.72rem; color:var(--green); margin-top:6px; font-family:var(--font-mono); }
+
+/* ── Accordion ── */
+.accordion-header {
+  display:flex; align-items:center; justify-content:space-between;
+  cursor:pointer; padding:4px 0;
+}
+.accordion-header h3 { font-family:var(--font-head); font-size:1rem; font-weight:700; }
+.accordion-arrow { color:var(--muted); transition:transform .3s; font-size:1.2rem; }
+.accordion-body { display:none; margin-top:20px; }
+.accordion-body.open { display:block; }
+.accordion-header.open .accordion-arrow { transform:rotate(180deg); }
+
+/* ── Analyze Button ── */
+.analyze-wrap { text-align:center; margin:32px 0; }
+.btn-analyze {
+  font-family:var(--font-head); font-weight:800; font-size:1.1rem;
+  letter-spacing:.5px; color:#000;
+  background:linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  border:none; border-radius:14px; padding:18px 56px;
+  cursor:pointer; position:relative; overflow:hidden;
+  transition:transform .2s, box-shadow .2s;
+  box-shadow:0 0 40px rgba(0,229,255,.3);
+}
+.btn-analyze:hover { transform:translateY(-2px); box-shadow:0 0 60px rgba(0,229,255,.4); }
+.btn-analyze:active { transform:translateY(0); }
+.btn-analyze:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.btn-analyze .shimmer {
+  position:absolute; top:0; left:-100%; width:60%; height:100%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+  animation:shimmer 2s infinite;
+}
+@keyframes shimmer { to { left:200%; } }
+
+/* ── Progress ── */
+.progress-bar {
+  display:none; background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:20px; margin-bottom:24px;
+}
+.progress-bar.show { display:block; }
+.progress-steps { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.progress-step {
+  font-family:var(--font-mono); font-size:.72rem; padding:5px 12px;
+  border-radius:20px; border:1px solid var(--border); color:var(--muted);
+  transition:all .4s;
+}
+.progress-step.active { border-color:var(--accent); color:var(--accent); background:rgba(0,229,255,.08); }
+.progress-step.done { border-color:var(--green); color:var(--green); background:rgba(0,200,83,.08); }
+.progress-track { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); width:0%; transition:width .6s ease; border-radius:2px; }
+.progress-msg { font-family:var(--font-mono); font-size:.78rem; color:var(--muted); margin-top:10px; }
+
+/* ── Results ── */
+#results { display:none; }
+#results.show { display:block; }
+
+.result-header {
+  display:flex; align-items:center; gap:20px;
+  padding:28px; border-radius:16px;
+  background:var(--card); border:1px solid var(--border);
+  margin-bottom:20px;
+  animation: fadeUp .5s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+.score-ring { position:relative; width:120px; height:120px; flex-shrink:0; }
+.score-ring svg { transform:rotate(-90deg); }
+.score-ring-text {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+}
+.score-ring-num { font-family:var(--font-head); font-size:2rem; font-weight:800; line-height:1; }
+.score-ring-lbl { font-family:var(--font-mono); font-size:.6rem; color:var(--muted); }
+.result-meta { flex:1; }
+.result-verdict { font-family:var(--font-head); font-size:1.4rem; font-weight:800; margin-bottom:8px; }
+.result-oneliner { font-size:.95rem; color:var(--muted); line-height:1.6; margin-bottom:16px; }
+.result-pills { display:flex; gap:10px; flex-wrap:wrap; }
+.pill {
+  font-family:var(--font-mono); font-size:.72rem; padding:6px 14px;
+  border-radius:20px; border:1px solid; display:flex; align-items:center; gap:6px;
+}
+.pill-green { border-color:rgba(0,200,83,.4); color:var(--green); background:rgba(0,200,83,.08); }
+.pill-amber { border-color:rgba(255,179,0,.4); color:var(--amber); background:rgba(255,179,0,.08); }
+.pill-red   { border-color:rgba(255,61,87,.4);  color:var(--red);   background:rgba(255,61,87,.08); }
+.pill-blue  { border-color:rgba(0,229,255,.4);  color:var(--accent);background:rgba(0,229,255,.08); }
+
+/* ── Tabs ── */
+.tabs { display:flex; gap:4px; margin-bottom:20px; background:var(--card); padding:6px; border-radius:12px; border:1px solid var(--border); flex-wrap:wrap; }
+.tab-btn {
+  font-family:var(--font-mono); font-size:.75rem; font-weight:500;
+  padding:9px 18px; border-radius:8px; border:none; background:transparent;
+  color:var(--muted); cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+.tab-btn.active { background:var(--border); color:var(--text); }
+.tab-pane { display:none; animation:fadeUp .3s ease; }
+.tab-pane.active { display:block; }
+
+/* ── SHAP Chart ── */
+.shap-bar { display:flex; align-items:center; gap:12px; margin:6px 0; }
+.shap-label { font-family:var(--font-mono); font-size:.72rem; color:var(--muted); width:160px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.shap-track { flex:1; height:8px; background:var(--border); border-radius:4px; overflow:visible; position:relative; }
+.shap-fill { height:100%; border-radius:4px; transition:width .8s ease; }
+.shap-val { font-family:var(--font-mono); font-size:.68rem; color:var(--muted); width:50px; text-align:right; }
+
+/* ── Flags ── */
+.flag-item {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:14px 16px; border-radius:10px; margin-bottom:10px; border:1px solid;
+}
+.flag-high   { border-color:rgba(255,61,87,.3);  background:rgba(255,61,87,.06); }
+.flag-medium { border-color:rgba(255,179,0,.3);  background:rgba(255,179,0,.06); }
+.flag-none   { border-color:rgba(0,200,83,.3);   background:rgba(0,200,83,.06); }
+.flag-icon { font-size:1.2rem; margin-top:2px; }
+.flag-content { flex:1; }
+.flag-title { font-family:var(--font-head); font-size:.85rem; font-weight:700; margin-bottom:4px; }
+.flag-detail { font-size:.8rem; color:var(--muted); }
+.flag-badge {
+  font-family:var(--font-mono); font-size:.65rem; padding:3px 8px;
+  border-radius:10px; flex-shrink:0; height:fit-content;
+}
+.badge-high   { background:rgba(255,61,87,.2);  color:var(--red); }
+.badge-medium { background:rgba(255,179,0,.2);  color:var(--amber); }
+
+/* ── Research ── */
+.news-item {
+  padding:14px 16px; border-radius:10px; border:1px solid var(--border);
+  margin-bottom:10px; display:flex; gap:12px; align-items:flex-start;
+  background:var(--surface);
+}
+.news-sentiment { font-size:1.2rem; flex-shrink:0; }
+.news-headline { font-family:var(--font-head); font-size:.85rem; font-weight:600; margin-bottom:4px; }
+.news-summary { font-size:.8rem; color:var(--muted); line-height:1.5; }
+
+.five-c { padding:14px; border-radius:10px; border:1px solid var(--border); margin-bottom:8px; background:var(--surface); }
+.five-c-label { font-family:var(--font-mono); font-size:.7rem; color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin-bottom:5px; }
+.five-c-text { font-size:.85rem; color:var(--muted); line-height:1.5; }
+
+/* ── Download Button ── */
+.btn-download {
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--font-head); font-weight:700; font-size:.9rem;
+  color:var(--text); background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:14px 28px; cursor:pointer;
+  transition:all .2s; text-decoration:none;
+}
+.btn-download:hover { border-color:var(--accent); color:var(--accent); background:rgba(0,229,255,.05); }
+
+/* ── Error ── */
+.error-box {
+  background:rgba(255,61,87,.06); border:1px solid rgba(255,61,87,.3);
+  border-radius:12px; padding:20px; color:var(--red);
+  font-family:var(--font-mono); font-size:.82rem; line-height:1.6;
+  display:none;
+}
+.error-box.show { display:block; }
+
+/* ── Utility ── */
+.divider { border:none; border-top:1px solid var(--border); margin:28px 0; }
+.section-title { font-family:var(--font-head); font-size:1rem; font-weight:700; margin-bottom:16px; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.muted { color:var(--muted); font-size:.85rem; }
+
+@media(max-width:768px) {
+  nav { padding:0 20px; }
+  .hero { padding:60px 20px 40px; }
+  .main { padding:0 20px 60px; }
+  .form-grid, .form-grid-4, .upload-grid, .two-col { grid-template-columns:1fr; }
+  .form-grid-2 { grid-template-columns:1fr 1fr; }
+  .hero-stats { gap:24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-brand">
+    <div class="dot"></div>
+    CreditLens Pro
+  </div>
+  <div style="display:flex;gap:12px;align-items:center;">
+    <span class="nav-tag">v2.0 · IIT Hyderabad Hackathon</span>
+    <span class="nav-tag">Vivriti Capital Challenge</span>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">
+    <div class="pulse"></div>
+    National AI/ML Hackathon 2026 · "Intelli-Credit" Challenge
+  </div>
+  <h1>AI-Powered Corporate<br>Credit Intelligence</h1>
+  <p>Upload financial documents. Our AI ingests, cross-validates, researches, scores, and generates a professional Credit Appraisal Memo in minutes — not weeks.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">AI Pillars</div></div>
+    <div class="stat"><div class="stat-num">₹7.5L</div><div class="stat-lbl">Prize Pool</div></div>
+    <div class="stat"><div class="stat-num">63M</div><div class="stat-lbl">MSMEs Impacted</div></div>
+    <div class="stat"><div class="stat-num">90s</div><div class="stat-lbl">vs 3 Weeks Manual</div></div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Step 0: API Key -->
+  <div class="step-label">
+    <div class="step-num">0</div>
+    <div class="step-title">Configuration</div>
+  </div>
+  <div class="card">
+    <div class="field">
+      <label>Gemini API Key</label>
+      <input type="password" id="api_key" placeholder="Paste your Gemini API key (aistudio.google.com)">
+      <span class="hint">Your key stays in your browser. Never sent to any server except Google.</span>
+    </div>
+  </div>
+
+  <!-- Step 1: Company Info -->
+  <div class="step-label" style="margin-top:32px;">
+    <div class="step-num">1</div>
+    <div class="step-title">Company Information</div>
+  </div>
+  <div class="card">
+    <div class="form-grid" style="margin-bottom:16px;">
+      <div class="field">
+        <label>Company Name *</label>
+        <input type="text" id="company_name" placeholder="e.g. Rajesh Textiles Pvt Ltd">
+      </div>
+      <div class="field">
+        <label>Promoter / Director Name *</label>
+        <input type="text" id="promoter_name" placeholder="e.g. Rajesh Kumar">
+      </div>
+      <div class="field">
+        <label>Sector *</label>
+        <select id="sector">
+          {% for s in sectors %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>GSTIN</label>
+        <input type="text" id="gstin" placeholder="e.g. 24AABCU9603R1ZX">
+      </div>
+      <div class="field">
+        <label>Loan Amount Requested (₹)</label>
+        <input type="number" id="loan_amount" value="5000000" min="100000" step="100000">
+      </div>
+      <div class="field">
+        <label>CIBIL Commercial Score</label>
+        <input type="number" id="cibil_score" value="650" min="300" max="900">
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Financials -->
+  <div class="step-label" style="margin-top:32px;">
+    <div class="step-num">2</div>
+    <div class="step-title">Financial Data (Manual Entry — override by uploading PDFs)</div>
+  </div>
+  <div class="card">
+    <div class="accordion-header" onclick="toggleAccordion(this)">
+      <h3>📊 Financial Inputs <span style="color:var(--muted);font-weight:400;font-size:.85rem;"> — click to expand</span></h3>
+      <span class="accordion-arrow">⌄</span>
+    </div>
+    <div class="accordion-body">
+      <div class="form-grid-4" style="margin-bottom:16px;">
+        <div class="field"><label>Business Age (Years)</label><input type="number" id="vintage" value="8" min="1" max="50"></div>
+        <div class="field"><label>Annual Turnover (₹ Lakhs)</label><input type="number" id="turnover" value="200" min="1"></div>
+        <div class="field"><label>Net Profit (₹ Lakhs)</label><input type="number" id="net_profit" value="15"></div>
+        <div class="field"><label>Total Assets (₹ Lakhs)</label><input type="number" id="total_assets" value="300" min="1"></div>
+      </div>
+      <div class="form-grid-4">
+        <div class="field"><label>Total Liabilities (₹ Lakhs)</label><input type="number" id="total_liabilities" value="180" min="0"></div>
+        <div class="field"><label>Existing Loans (₹ Lakhs)</label><input type="number" id="existing_loans" value="50" min="0"></div>
+        <div class="field"><label>Collateral Value (₹ Lakhs)</label><input type="number" id="collateral_value" value="80" min="0"></div>
+        <div class="field"><label>Employee Count</label><input type="number" id="employee_count" value="75" min="1"></div>
+      </div>
+      <div class="form-grid-2" style="margin-top:16px;">
+        <div class="field"><label>GST Filing Months (of 12)</label><input type="number" id="gst_months" value="10" min="0" max="12"></div>
+        <div class="field"><label>Bank-GST Mismatch (0-1)</label><input type="number" id="bank_gst_mismatch" value="0.05" min="0" max="1" step="0.01"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Documents -->
+  <div class="step-label" style="margin-top:32px;">
+    <div class="step-num">3</div>
+    <div class="step-title">Upload Financial Documents (PDF)</div>
+  </div>
+  <div class="card">
+    <div class="upload-grid">
+      <div class="upload-zone" id="zone-gst">
+        <input type="file" id="gst_docs" multiple accept=".pdf" onchange="updateZone('zone-gst','gst_docs')">
+        <div class="upload-icon">📄</div>
+        <div class="upload-label">GST Returns</div>
+        <div class="upload-sub">GSTR-3B, GSTR-1, GSTR-9</div>
+        <div class="upload-count" id="count-gst_docs"></div>
+      </div>
+      <div class="upload-zone" id="zone-bank">
+        <input type="file" id="bank_docs" multiple accept=".pdf" onchange="updateZone('zone-bank','bank_docs')">
+        <div class="upload-icon">🏦</div>
+        <div class="upload-label">Bank Statements</div>
+        <div class="upload-sub">6-12 months preferred</div>
+        <div class="upload-count" id="count-bank_docs"></div>
+      </div>
+      <div class="upload-zone" id="zone-other">
+        <input type="file" id="other_docs" multiple accept=".pdf" onchange="updateZone('zone-other','other_docs')">
+        <div class="upload-icon">📋</div>
+        <div class="upload-label">Annual Report / ITR</div>
+        <div class="upload-sub">Balance sheet, P&L, ITR</div>
+        <div class="upload-count" id="count-other_docs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: Qualitative Notes -->
+  <div class="step-label" style="margin-top:32px;">
+    <div class="step-num">4</div>
+    <div class="step-title">Credit Officer Field Notes <span style="color:var(--muted);font-size:.75rem;font-family:var(--font-mono);">— UNIQUE FEATURE</span></div>
+  </div>
+  <div class="card">
+    <div class="field">
+      <label>Observations from Site Visit / Management Interview</label>
+      <textarea id="qualitative_notes" placeholder='e.g. "Factory operating at 40% capacity. Promoter evasive about loan purpose. Warehouse showed strong inventory levels matching stated turnover. Staff confirmed timely salary payments."'></textarea>
+      <span class="hint">AI will adjust the final credit score based on your qualitative observations — just like a real credit manager.</span>
+    </div>
+  </div>
+
+  <!-- Analyze -->
+  <div class="analyze-wrap">
+    <button class="btn-analyze" onclick="runAnalysis()">
+      <span class="shimmer"></span>
+      🚀 Run Credit Intelligence Analysis
+    </button>
+  </div>
+
+  <!-- Error -->
+  <div class="error-box" id="error-box"></div>
+
+  <!-- Progress -->
+  <div class="progress-bar" id="progress-bar">
+    <div class="progress-steps">
+      <div class="progress-step" id="ps-1">📄 Data Ingestion</div>
+      <div class="progress-step" id="ps-2">🌐 Web Research</div>
+      <div class="progress-step" id="ps-3">🤖 ML Scoring</div>
+      <div class="progress-step" id="ps-4">📝 Notes Analysis</div>
+      <div class="progress-step" id="ps-5">📋 CAM Generation</div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-msg" id="progress-msg">Initializing...</div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+
+    <!-- Score Header -->
+    <div class="result-header" id="result-header">
+      <div class="score-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#1A2640" stroke-width="10"/>
+          <circle cx="60" cy="60" r="52" fill="none" id="score-arc"
+            stroke="#00E5FF" stroke-width="10" stroke-linecap="round"
+            stroke-dasharray="327" stroke-dashoffset="327"/>
+        </svg>
+        <div class="score-ring-text">
+          <div class="score-ring-num" id="score-num">--</div>
+          <div class="score-ring-lbl">/ 100</div>
+        </div>
+      </div>
+      <div class="result-meta">
+        <div class="result-verdict" id="result-verdict">Analyzing...</div>
+        <div class="result-oneliner" id="result-oneliner"></div>
+        <div class="result-pills" id="result-pills"></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('tab-shap',this)">📊 Score Breakdown</button>
+      <button class="tab-btn" onclick="showTab('tab-fraud',this)">🚩 Fraud Flags</button>
+      <button class="tab-btn" onclick="showTab('tab-research',this)">🌐 Research Intel</button>
+      <button class="tab-btn" onclick="showTab('tab-fivec',this)">📋 Five Cs</button>
+      <button class="tab-btn" onclick="showTab('tab-notes',this)">📝 Field Notes</button>
+      <button class="tab-btn" onclick="showTab('tab-download',this)">⬇️ Download CAM</button>
+    </div>
+
+    <!-- Tab: SHAP -->
+    <div class="tab-pane active" id="tab-shap">
+      <div class="card">
+        <div class="section-title">AI Explainability — SHAP Feature Impact</div>
+        <p class="muted" style="margin-bottom:20px;">Why did the model give this score? Each bar shows a feature's contribution.</p>
+        <div id="shap-chart"></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="section-title" style="color:var(--green);">✅ Top Positive Factors</div>
+          <div id="positive-factors"></div>
+        </div>
+        <div class="card">
+          <div class="section-title" style="color:var(--red);">❌ Top Negative Factors</div>
+          <div id="negative-factors"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Fraud -->
+    <div class="tab-pane" id="tab-fraud">
+      <div class="card">
+        <div class="section-title">🚩 Fraud & Risk Detection</div>
+        <p class="muted" style="margin-bottom:20px;">India-specific cross-document validation — GST vs Bank vs ITR reconciliation.</p>
+        <div id="fraud-flags"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Research -->
+    <div class="tab-pane" id="tab-research">
+      <div class="card">
+        <div class="section-title">🌐 External Intelligence Report</div>
+        <div id="research-summary"></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="section-title">📰 Company News</div>
+          <div id="research-news"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">📈 Sector Outlook</div>
+          <div id="research-sector"></div>
+        </div>
+      </div>
+      <div class="card" id="promoter-card" style="display:none;">
+        <div class="section-title" style="color:var(--amber);">⚠️ Promoter Risk Signals</div>
+        <div id="promoter-flags"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Five Cs -->
+    <div class="tab-pane" id="tab-fivec">
+      <div class="card">
+        <div class="section-title">Five Cs of Credit Assessment</div>
+        <div id="five-cs"></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="section-title">📌 Approval Conditions</div>
+          <div id="conditions"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">⚠️ Early Warning Triggers</div>
+          <div id="triggers"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Notes -->
+    <div class="tab-pane" id="tab-notes">
+      <div class="card" id="notes-result">
+        <div class="section-title">📝 Credit Officer Field Notes Analysis</div>
+        <div id="notes-content"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Download -->
+    <div class="tab-pane" id="tab-download">
+      <div class="card" style="text-align:center; padding:48px;">
+        <div style="font-size:3rem; margin-bottom:16px;">📄</div>
+        <div class="section-title" style="font-size:1.3rem; margin-bottom:8px;">Credit Appraisal Memo Ready</div>
+        <p class="muted" style="margin-bottom:32px; max-width:520px; margin-left:auto; margin-right:auto;">
+          Professional CAM with Five Cs assessment, SHAP explainability, fraud flags, and full loan recommendation — formatted like a real bank document.
+        </p>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+          <a class="btn-download" id="cam-download-docx" href="#" download="CreditLens_CAM.docx" style="border-color:rgba(0,229,255,.4);color:var(--accent);">
+            <span style="font-size:1.3rem;">📝</span>
+            <div style="text-align:left;">
+              <div style="font-size:.85rem;font-weight:700;">Download Word (.docx)</div>
+              <div style="font-size:.7rem;color:var(--muted);font-family:var(--font-mono);">Editable — best for review</div>
+            </div>
+          </a>
+          <a class="btn-download" id="cam-download-pdf" href="#" download="CreditLens_CAM.pdf" style="border-color:rgba(255,61,87,.4);color:#FF6B6B;">
+            <span style="font-size:1.3rem;">📕</span>
+            <div style="text-align:left;">
+              <div style="font-size:.85rem;font-weight:700;">Download PDF</div>
+              <div style="font-size:.7rem;color:var(--muted);font-family:var(--font-mono);">Print-ready — best for sharing</div>
+            </div>
+          </a>
+        </div>
+        <p id="pdf-unavailable" style="display:none;margin-top:16px;font-family:var(--font-mono);font-size:.72rem;color:var(--muted);">
+          ⚠️ PDF export requires LibreOffice installed on the server. DOCX is always available.
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /results -->
+</div><!-- /main -->
+
+<script>
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function toggleAccordion(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+function updateZone(zoneId, inputId) {
+  const files = document.getElementById(inputId).files;
+  const zone  = document.getElementById(zoneId);
+  const count = document.getElementById('count-'+inputId);
+  if (files.length > 0) {
+    zone.classList.add('has-files');
+    count.textContent = `${files.length} file${files.length>1?'s':''} selected`;
+  } else {
+    zone.classList.remove('has-files');
+    count.textContent = '';
+  }
+}
+function setProgress(pct, msg, step) {
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-msg').textContent = msg;
+  for (let i=1; i<=5; i++) {
+    const el = document.getElementById('ps-'+i);
+    if (i < step)      el.className = 'progress-step done';
+    else if (i===step) el.className = 'progress-step active';
+    else               el.className = 'progress-step';
+  }
+}
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = '❌ Error: ' + msg;
+  box.classList.add('show');
+}
+
+// ── Score Ring Animation ───────────────────────────────────────────────────
+function animateScore(score, color) {
+  const circ = 327;
+  const arc  = document.getElementById('score-arc');
+  const num  = document.getElementById('score-num');
+  arc.setAttribute('stroke', color);
+  let current = 0;
+  const target = score;
+  const interval = setInterval(() => {
+    current += 2;
+    if (current >= target) { current = target; clearInterval(interval); }
+    const offset = circ - (current/100)*circ;
+    arc.setAttribute('stroke-dashoffset', offset);
+    num.textContent = Math.round(current);
+    num.style.color = color;
+  }, 16);
+}
+
+// ── SHAP Chart ─────────────────────────────────────────────────────────────
+function renderSHAP(explanations) {
+  const container = document.getElementById('shap-chart');
+  container.innerHTML = '';
+  const maxImpact = Math.max(...explanations.map(e=>Math.abs(e.impact)));
+  explanations.slice(0,12).forEach(e => {
+    const pct = maxImpact > 0 ? (Math.abs(e.impact)/maxImpact)*100 : 0;
+    const color = e.impact > 0 ? 'var(--green)' : 'var(--red)';
+    container.innerHTML += `
+      <div class="shap-bar">
+        <div class="shap-label" title="${e.feature}">${e.feature}</div>
+        <div class="shap-track">
+          <div class="shap-fill" style="width:${pct}%;background:${color};"></div>
+        </div>
+        <div class="shap-val" style="color:${color};">${e.impact>0?'+':''}${e.impact.toFixed(3)}</div>
+      </div>`;
+  });
+}
+
+function renderFactors(factors, containerId, positive) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  if (!factors || factors.length===0) { el.innerHTML='<p class="muted">None identified.</p>'; return; }
+  factors.forEach(f => {
+    const color = positive ? 'var(--green)' : 'var(--red)';
+    el.innerHTML += `
+      <div style="padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--surface);">
+        <div style="font-family:var(--font-mono);font-size:.72rem;color:${color};margin-bottom:3px;">${f.feature}</div>
+        <div style="font-size:.82rem;color:var(--muted);">Value: <b style="color:var(--text);">${f.value}</b> &nbsp;|&nbsp; Impact: <b style="color:${color};">${f.impact>0?'+':''}${f.impact.toFixed(3)}</b></div>
+      </div>`;
+  });
+}
+
+// ── Render Results ────────────────────────────────────────────────────────
+function renderResults(data) {
+  const score  = data.credit_score;
+  const band   = data.band;
+  const rec    = data.recommendation;
+  const color  = band.color;
+
+  // Score ring
+  animateScore(score, color);
+
+  // Header
+  document.getElementById('result-verdict').textContent = rec.recommendation;
+  document.getElementById('result-verdict').style.color = color;
+  document.getElementById('result-oneliner').textContent = rec.one_line_verdict || '';
+
+  // Pills
+  const pills = document.getElementById('result-pills');
+  pills.innerHTML = `
+    <div class="pill pill-blue">Score: ${score}/100</div>
+    <div class="pill pill-blue">Rating: ${band.rating}</div>
+    <div class="pill pill-${score>=65?'green':score>=45?'amber':'red'}">₹${Number(rec.suggested_amount||0).toLocaleString('en-IN')}</div>
+    <div class="pill pill-blue">Rate: ${rec.suggested_rate||'N/A'}</div>
+    <div class="pill pill-${data.fraud_flags?.length?'amber':'green'}">${data.fraud_flags?.length||0} Fraud Flags</div>
+  `;
+
+  // SHAP
+  if (data.score_result?.explanations) renderSHAP(data.score_result.explanations);
+  renderFactors(data.score_result?.top_positive, 'positive-factors', true);
+  renderFactors(data.score_result?.top_negative, 'negative-factors', false);
+
+  // Fraud flags
+  const fraudEl = document.getElementById('fraud-flags');
+  fraudEl.innerHTML = '';
+  if (!data.fraud_flags || data.fraud_flags.length===0) {
+    fraudEl.innerHTML = '<div class="flag-item flag-none"><div class="flag-icon">✅</div><div class="flag-content"><div class="flag-title">No Fraud Flags Detected</div><div class="flag-detail">Cross-document data appears consistent. GST, Bank, and ITR figures align within acceptable thresholds.</div></div></div>';
+  } else {
+    data.fraud_flags.forEach(f => {
+      const cls   = f.severity==='High'?'flag-high':'flag-medium';
+      const badge = f.severity==='High'?'badge-high':'badge-medium';
+      const icon  = f.severity==='High'?'🚩':'⚠️';
+      fraudEl.innerHTML += `
+        <div class="flag-item ${cls}">
+          <div class="flag-icon">${icon}</div>
+          <div class="flag-content">
+            <div class="flag-title">${f.flag}</div>
+            <div class="flag-detail">${f.detail}</div>
+          </div>
+          <div class="flag-badge ${badge}">${f.severity}</div>
+        </div>`;
+    });
+  }
+
+  // Research
+  const research = data.research || {};
+  const riskColor= {'Low':'var(--green)','Medium':'var(--amber)','High':'var(--red)','Very High':'var(--red)'}[research.overall_research_risk]||'var(--muted)';
+  document.getElementById('research-summary').innerHTML = `
+    <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+      <div class="pill pill-${research.overall_research_risk==='Low'?'green':research.overall_research_risk==='Medium'?'amber':'red'}">External Risk: ${research.overall_research_risk||'N/A'}</div>
+      <div class="pill pill-blue">Flags: ${research.red_flags_count||0}</div>
+      <div class="pill pill-green">Positives: ${research.positive_signals_count||0}</div>
+    </div>
+    <p class="muted">${research.research_summary||''}</p>`;
+
+  const newsEl = document.getElementById('research-news');
+  newsEl.innerHTML = '';
+  (research.company_news||[]).slice(0,4).forEach(n => {
+    const icon = n.sentiment==='Positive'?'📈':n.sentiment==='Negative'?'📉':'📰';
+    newsEl.innerHTML += `
+      <div class="news-item">
+        <div class="news-sentiment">${icon}</div>
+        <div>
+          <div class="news-headline">${n.headline||''}</div>
+          <div class="news-summary">${n.summary||''}</div>
+        </div>
+      </div>`;
+  });
+  if (!research.company_news?.length) newsEl.innerHTML = '<p class="muted">No specific company news found. Sector-level analysis applied.</p>';
+
+  const so = research.sector_outlook||{};
+  const soColor = {'Positive':'var(--green)','Stable':'var(--accent)','Negative':'var(--red)'}[so.overall]||'var(--muted)';
+  document.getElementById('research-sector').innerHTML = `
+    <div style="font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:${soColor};margin-bottom:12px;">${so.overall||'N/A'}</div>
+    ${(so.key_trends||[]).slice(0,3).map(t=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;color:var(--muted);">• ${t}</div>`).join('')}
+    ${(so.risk_factors||[]).slice(0,2).map(r=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;color:var(--amber);">⚠️ ${r}</div>`).join('')}`;
+
+  const pFlags = research.promoter_flags||[];
+  if (pFlags.length > 0) {
+    document.getElementById('promoter-card').style.display='block';
+    document.getElementById('promoter-flags').innerHTML = pFlags.map(f=>
+      `<div class="flag-item flag-medium"><div class="flag-icon">⚠️</div><div class="flag-content"><div class="flag-title">${f.issue}</div></div><div class="flag-badge badge-medium">${f.severity}</div></div>`
+    ).join('');
+  }
+
+  // Five Cs
+  const fiveCs = rec.five_cs||{};
+  document.getElementById('five-cs').innerHTML = Object.entries(fiveCs).map(([k,v])=>`
+    <div class="five-c">
+      <div class="five-c-label">${k}</div>
+      <div class="five-c-text">${v}</div>
+    </div>`).join('');
+
+  const conds = rec.conditions||[];
+  document.getElementById('conditions').innerHTML = conds.length
+    ? conds.map(c=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--muted);">• ${c}</div>`).join('')
+    : '<p class="muted">No specific conditions.</p>';
+
+  const triggers = rec.monitoring_triggers||[];
+  document.getElementById('triggers').innerHTML = triggers.length
+    ? triggers.map(t=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;color:var(--amber);">⚠️ ${t}</div>`).join('')
+    : '<p class="muted">Standard quarterly monitoring.</p>';
+
+  // Notes
+  const na = data.notes_adjustment;
+  const notesEl = document.getElementById('notes-content');
+  if (na) {
+    const adj = na.adjustment||0;
+    const dir = adj>=0?'▲':'▼';
+    const nc  = adj>=0?'var(--green)':'var(--red)';
+    notesEl.innerHTML = `
+      <p class="muted" style="margin-bottom:16px;"><em>"${document.getElementById('qualitative_notes').value}"</em></p>
+      <div style="padding:14px;border-radius:10px;border:1px solid ${nc};background:${nc}11;margin-bottom:12px;">
+        <div style="font-family:var(--font-head);font-size:1rem;font-weight:700;color:${nc};">Score ${dir} ${Math.abs(adj)} points → ${na.adjusted_score}/100</div>
+        <div class="muted" style="margin-top:6px;">${na.reason}</div>
+      </div>
+      <div class="two-col">
+        <div><span style="color:var(--muted);font-family:var(--font-mono);font-size:.72rem;">CHARACTER</span><br>${na.character_assessment}</div>
+        <div><span style="color:var(--muted);font-family:var(--font-mono);font-size:.72rem;">SITE VISIT RISK</span><br>${na.site_visit_risk}</div>
+      </div>`;
+  } else {
+    notesEl.innerHTML = '<p class="muted">No qualitative notes were entered.</p>';
+  }
+
+  // DOCX download
+  if (data.cam_docx_b64 || data.cam_b64) {
+    const docxB64 = data.cam_docx_b64 || data.cam_b64;
+    const blob = b64toBlob(docxB64, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    const url  = URL.createObjectURL(blob);
+    const link = document.getElementById('cam-download-docx');
+    link.href     = url;
+    link.download = `CreditLens_CAM_${data.company_name}_${Math.round(score)}.docx`;
+  }
+  // PDF download
+  const pdfLink = document.getElementById('cam-download-pdf');
+  if (data.cam_pdf_b64) {
+    const blob = b64toBlob(data.cam_pdf_b64, 'application/pdf');
+    const url  = URL.createObjectURL(blob);
+    pdfLink.href     = url;
+    pdfLink.download = `CreditLens_CAM_${data.company_name}_${Math.round(score)}.pdf`;
+  } else {
+    pdfLink.style.opacity = '0.4';
+    pdfLink.style.pointerEvents = 'none';
+    document.getElementById('pdf-unavailable').style.display = 'block';
+  }
+}
+
+function b64toBlob(b64Data, contentType='', sliceSize=512) {
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
+  for (let offset=0; offset<byteCharacters.length; offset+=sliceSize) {
+    const slice = byteCharacters.slice(offset, offset+sliceSize);
+    const byteNumbers = new Array(slice.length);
+    for (let i=0; i<slice.length; i++) byteNumbers[i] = slice.charCodeAt(i);
+    byteArrays.push(new Uint8Array(byteNumbers));
+  }
+  return new Blob(byteArrays, {type: contentType});
+}
+
+// ── Main Analysis ─────────────────────────────────────────────────────────
+async function runAnalysis() {
+  const apiKey = document.getElementById('api_key').value.trim();
+  if (!apiKey) { showError('Please enter your Gemini API key.'); return; }
+
+  const companyName = document.getElementById('company_name').value.trim();
+  const promoter    = document.getElementById('promoter_name').value.trim();
+  if (!companyName || !promoter) { showError('Company name and promoter name are required.'); return; }
+
+  // Reset UI
+  document.getElementById('error-box').classList.remove('show');
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('progress-bar').classList.add('show');
+  document.querySelector('.btn-analyze').disabled = true;
+
+  setProgress(10, 'Preparing financial data...', 1);
+
+  const formData = new FormData();
+  formData.append('api_key',           apiKey);
+  formData.append('company_name',      companyName);
+  formData.append('promoter_name',     promoter);
+  formData.append('sector',            document.getElementById('sector').value);
+  formData.append('loan_amount',       document.getElementById('loan_amount').value);
+  formData.append('cibil_score',       document.getElementById('cibil_score').value);
+  formData.append('qualitative_notes', document.getElementById('qualitative_notes').value);
+  formData.append('vintage',           document.getElementById('vintage').value);
+  formData.append('turnover',          document.getElementById('turnover').value);
+  formData.append('net_profit',        document.getElementById('net_profit').value);
+  formData.append('total_assets',      document.getElementById('total_assets').value);
+  formData.append('total_liabilities', document.getElementById('total_liabilities').value);
+  formData.append('existing_loans',    document.getElementById('existing_loans').value);
+  formData.append('collateral_value',  document.getElementById('collateral_value').value);
+  formData.append('employee_count',    document.getElementById('employee_count').value);
+  formData.append('gst_months',        document.getElementById('gst_months').value);
+  formData.append('bank_gst_mismatch', document.getElementById('bank_gst_mismatch').value);
+
+  // Attach PDFs
+  ['gst_docs','bank_docs','other_docs'].forEach(id => {
+    const files = document.getElementById(id).files;
+    for (const f of files) formData.append(id, f);
+  });
+
+  // Fake progress while waiting
+  const steps = [
+    [20,'Extracting data from documents (Pillar 1)...',1],
+    [40,'Running web research agent (Pillar 2)...',2],
+    [60,'Calculating ML credit score (Pillar 3)...',3],
+    [75,'Processing qualitative field notes...',4],
+    [88,'Generating CAM report...',5],
+  ];
+  let si = 0;
+  const ticker = setInterval(() => {
+    if (si < steps.length) { setProgress(...steps[si++]); }
+  }, 2200);
+
+  try {
+    const resp = await fetch('/api/analyze', { method:'POST', body:formData });
+    const data = await resp.json();
+    clearInterval(ticker);
+
+    if (data.error) {
+      showError(data.error + (data.trace ? '\n\n' + data.trace.slice(0,400) : ''));
+      document.getElementById('progress-bar').classList.remove('show');
+    } else {
+      setProgress(100, '✅ Analysis complete!', 5);
+      setTimeout(() => {
+        document.getElementById('progress-bar').classList.remove('show');
+        document.getElementById('results').classList.add('show');
+        renderResults(data);
+        document.getElementById('results').scrollIntoView({behavior:'smooth'});
+      }, 600);
+    }
+  } catch(err) {
+    clearInterval(ticker);
+    showError('Network error: ' + err.message);
+    document.getElementById('progress-bar').classList.remove('show');
+  } finally {
+    document.querySelector('.btn-analyze').disabled = false;
+  }
+}
+</script>
+</body>
+</html>
